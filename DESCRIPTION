@@ -8,9 +8,5 @@ Description: A small package to help downloading .nc files from Copernicus 5p da
 License: CC3
 Encoding: UTF-8
 LazyData: true
-Imports:
-  httr,
-  xml2,
-  rvest,
-  httr
+Imports:httr,rvest,xml2
 RoxygenNote: 7.1.0

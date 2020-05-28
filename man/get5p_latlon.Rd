@@ -12,7 +12,7 @@ get5p_latlon(lat, lon, id = NULL)
 \item{lon}{Longitude (degrees) to search at}
 
 \item{id=NULL}{If the id parameter is omitted, the function returns a list of up to 10 S5p products available at the given coordinates,
-if an id is specified the functions downloads the product with the indicated id.}
+if an id is specified the functions downloads the product with the indicated id. If id=-1 then all the found products will be downloaded automatically.}
 }
 \description{
 The functions works by searching the latest 10 products available for a specific location (lat long).
@@ -20,7 +20,7 @@ It allows to download a specific product after identifying it.
 }
 \examples{
 get5p_latlon("44","12")
-get5p_latlon("44","12","1")
+get5p_latlon("44","12",1)
 }
 \keyword{download}
 \keyword{list,}

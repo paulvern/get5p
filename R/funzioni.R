@@ -12,8 +12,8 @@
 listlast<-function(month,year){
 
 fullpath<-paste0("https://scihub.copernicus.eu/catalogueview/S5P/",year,"/",month,"/")
-lista<-read_html(fullpath)
-nodes<-trimws(html_text(html_nodes(lista, "a")))
+lista<-xml2::read_html(fullpath)
+nodes<-trimws(rvest::html_text(rvest::html_nodes(lista, "a")))
 return (nodes[6:length(nodes)])}
 
 #' Get a list of 5p products
@@ -52,7 +52,7 @@ get5p<-function(month,year,number,id,fn)
   {
   leggo<-get5plist(month,year,number)
   p2<-paste0("https://s5phub.copernicus.eu/dhus/odata/v1/Products('",leggo$Id[id],"')/$value")
-  getandsave<-GET(p2,authenticate("s5pguest", "s5pguest"))
+  getandsave<-httr::GET(p2,httr::authenticate("s5pguest", "s5pguest"))
   save(getandsave,file=fn)
 }
 
@@ -64,26 +64,42 @@ get5p<-function(month,year,number,id,fn)
 #' @param lat Latitude (degrees) to search at
 #' @param lon Longitude (degrees) to search at
 #' @param id=NULL If the id parameter is omitted, the function returns a list of up to 10 S5p products available at the given coordinates,
-#'  if an id is specified the functions downloads the product with the indicated id.
+#'  if an id is specified the functions downloads the product with the indicated id. If id=-1 then all the found products will be downloaded automatically.
 #' @keywords list, download
 #' @export
 #' @examples
 #' get5p_latlon("44","12")
-#' get5p_latlon("44","12","1")
+#' get5p_latlon("44","12",1)
 get5p_latlon<-function(lat,lon,id=NULL)
 {
   leggo<-paste0("https://s5phub.copernicus.eu/dhus/search?q=footprint:\"Intersects(",lat,",",lon,")\"")
-  lista<-read_html(GET(leggo,authenticate("s5pguest", "s5pguest")))
-  nodes<-trimws(html_text(html_nodes(lista, "id")))
-  nodes2<-trimws(html_text(html_nodes(lista, "title")))
+  lista<-xml2::read_html(httr::GET(leggo,httr::authenticate("s5pguest", "s5pguest")))
+  nodes<-trimws(rvest::html_text(rvest::html_nodes(lista, "id")))
+  nodes2<-trimws(rvest::html_text(rvest::html_nodes(lista, "title")))
   nodi<-data.frame(name=nodes2[2:length(nodes2)],id=nodes[2:length(nodes)])
   if (!is.null(id)){
+    if(id!="-1"){
     leggo<-nodi$id[id]
     p2<-paste0("https://s5phub.copernicus.eu/dhus/odata/v1/Products('",leggo,"')/$value")
-    getandsave<-GET(p2,authenticate("s5pguest", "s5pguest"))
     nomefile<-paste0(as.character(nodi$name[id]),".nc")
+    print(paste0("Downloading ",nomefile))
+    getandsave<-httr::GET(p2,httr::authenticate("s5pguest", "s5pguest"))
     save(getandsave,file=nomefile)
-    nodi<-paste0("Salvato ",nomefile, " con successo")
+    print(paste0(nomefile, " successfully saved"))
+  }
+  if(id=="-1"){
+    for(i in 1:length(nodi$id)){
+      leggo<-nodi$id[i]
+      print(paste0("Downloading file ",i,"/",length(nodi$id)))
+      p2<-paste0("https://s5phub.copernicus.eu/dhus/odata/v1/Products('",leggo,"')/$value")
+      nomefile<-paste0(as.character(nodi$name[i]),".nc")
+      print(paste0("Downloading ",nomefile))
+      getandsave<-httr::GET(p2,httr::authenticate("s5pguest", "s5pguest"))
+
+      save(getandsave,file=nomefile)
+      print(paste0(nomefile, " successfully saved"))
+    }}
+
   }
   return (nodi)
 }
