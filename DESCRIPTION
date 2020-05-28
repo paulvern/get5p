@@ -8,5 +8,9 @@ Description: A small package to help downloading .nc files from Copernicus 5p da
 License: CC3
 Encoding: UTF-8
 LazyData: true
-NeedsCompilation: no
-Packaged: 2020-05-27 13:21:19 UTC; pveronesi
+Imports:
+  httr,
+  xml2,
+  rvest,
+  httr
+RoxygenNote: 7.1.0
