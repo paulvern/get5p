@@ -74,32 +74,32 @@ get5p_latlon<-function(lat,lon,id=NULL)
 {
   leggo<-paste0("https://s5phub.copernicus.eu/dhus/search?q=footprint:\"Intersects(",lat,",",lon,")\"")
   lista<-xml2::read_html(httr::GET(leggo,httr::authenticate("s5pguest", "s5pguest")))
+  sommario<-trimws(rvest::html_text(rvest::html_nodes(lista, "summary")))
   nodes<-trimws(rvest::html_text(rvest::html_nodes(lista, "id")))
   nodes2<-trimws(rvest::html_text(rvest::html_nodes(lista, "title")))
-  nodi<-data.frame(name=nodes2[2:length(nodes2)],id=nodes[2:length(nodes)])
+  nodi<-data.frame(desc=sommario,name=nodes2[2:length(nodes2)],id=nodes[2:length(nodes)])
   if (!is.null(id)){
     if(id!="-1"){
     leggo<-nodi$id[id]
-    p2<-paste0("https://s5phub.copernicus.eu/dhus/odata/v1/Products('",leggo,"')/$value")
+    p2<-paste0("https://s5pguest:s5pguest@s5phub.copernicus.eu/dhus/odata/v1/Products('",leggo,"')/$value")
     nomefile<-paste0(as.character(nodi$name[id]),".nc")
     print(paste0("Downloading ",nomefile))
-    getandsave<-httr::GET(p2,httr::authenticate("s5pguest", "s5pguest"))
-    save(getandsave,file=nomefile)
+    download.file(p2,as.character(nodi$name[id]))
+
     print(paste0(nomefile, " successfully saved"))
   }
   if(id=="-1"){
     for(i in 1:length(nodi$id)){
       leggo<-nodi$id[i]
       print(paste0("Downloading file ",i,"/",length(nodi$id)))
-      p2<-paste0("https://s5phub.copernicus.eu/dhus/odata/v1/Products('",leggo,"')/$value")
+      p2<-paste0("https://s5pguest:s5pguest@s5phub.copernicus.eu/dhus/odata/v1/Products('",leggo,"')/$value")
       nomefile<-paste0(as.character(nodi$name[i]),".nc")
       print(paste0("Downloading ",nomefile))
-      getandsave<-httr::GET(p2,httr::authenticate("s5pguest", "s5pguest"))
-
-      save(getandsave,file=nomefile)
+      download.file(p2,nodi$name[i])
       print(paste0(nomefile, " successfully saved"))
     }}
 
   }
   return (nodi)
 }
+
