@@ -58,7 +58,7 @@ get5p<-function(month,year,number,id,fn)
 
 #' Get the latest S5p products (lat long search)
 #'
-#' The functions works by searching the latest 10 products available for a specific location (lat long).
+#' The function works by searching the latest 10 products available for a specific location (lat long).
 #' It allows to download a specific product after identifying it.
 #' @param lat Latitude (degrees) to search at
 #' @param lon Longitude (degrees) to search at
@@ -94,11 +94,36 @@ get5p_latlon<-function(lat,lon,id=NULL)
       p2<-paste0("https://s5pguest:s5pguest@s5phub.copernicus.eu/dhus/odata/v1/Products('",leggo,"')/$value")
       nomefile<-paste0(as.character(nodi$name[i]),".nc")
       print(paste0("Downloading ",nomefile))
-      download.file(p2,nodi$name[i])
+      download.file(p2,nomefile)
       print(paste0(nomefile, " successfully saved"))
     }}
 
   }
   return (nodi)
 }
+#' Get a S5p product
+#'
+#' This function allows to inspect a downloaded S5p file or plots it
+#' @param fil Name of the file to inspect/plot
+#' @param variable If the field is NULL then the function will return a list containing all the informations of the .nc file.
+#' Normally the variables names are included as PRODUCT/variable. If the variable name is given as parameter then the function
+#' will plot that variable
+#' @keywords list, download, plot
+#' @export
+#' @examples
+#' plot5p("S5P_OFFL_L2__AER_LH_20200527T115918_20200527T134048_13579_01_010302_20200529T045906.nc")
+#' plot5p("S5P_OFFL_L2__AER_LH_20200527T115918_20200527T134048_13579_01_010302_20200529T045906.nc","aerosol_index_340_380")
 
+plot5p<-function(fil,variable=NULL){
+  nc<-ncdf4::nc_open(fil)
+  lat<-ncdf4::ncvar_get(nc,"PRODUCT/latitude")
+  if(!is.null(variable)){
+lon<-ncdf4::ncvar_get(nc,"PRODUCT/longitude")
+pro<-ncdf4::ncvar_get(nc,paste0("PRODUCT/",variable))
+plottami<-data.frame(lat=as.vector(lat),lon=as.vector(lon),valore=as.vector(pro))
+ggplot2::ggplot(plottami, aes(y=lat, x=lon, fill=valore)) +
+  ggplot2::geom_tile(width=1, height=1) +
+  ggplot2::borders('world', xlim=range(plottami$lon), ylim=range(plottami$lat),
+          colour='gray90', size=.2)}
+return(nc)
+}

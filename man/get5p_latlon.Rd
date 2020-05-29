@@ -15,7 +15,7 @@ get5p_latlon(lat, lon, id = NULL)
 if an id is specified the functions downloads the product with the indicated id. If id=-1 then all the found products will be downloaded automatically.}
 }
 \description{
-The functions works by searching the latest 10 products available for a specific location (lat long).
+The function works by searching the latest 10 products available for a specific location (lat long).
 It allows to download a specific product after identifying it.
 }
 \examples{
