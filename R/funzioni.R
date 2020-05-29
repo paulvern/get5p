@@ -51,9 +51,8 @@ return(leggoresult)
 get5p<-function(month,year,number,id,fn)
   {
   leggo<-get5plist(month,year,number)
-  p2<-paste0("https://s5phub.copernicus.eu/dhus/odata/v1/Products('",leggo$Id[id],"')/$value")
-  getandsave<-httr::GET(p2,httr::authenticate("s5pguest", "s5pguest"))
-  save(getandsave,file=fn)
+  p2<-paste0("https://s5pguest:s5pguest@s5phub.copernicus.eu/dhus/odata/v1/Products('",leggo$Id[id],"')/$value")
+  download.file(p2,as.character(leggo$Name[id]))
 }
 
 
