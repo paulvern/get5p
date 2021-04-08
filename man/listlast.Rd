@@ -12,7 +12,7 @@ listlast(month, year)
 \item{year}{Desired year in yyyy format ("2020" not "20")}
 }
 \description{
-This function search inside the current catalogue of archived products for the Platform Sentinel 5P (https://scihub.copernicus.eu/catalogueview/S5P/)
+This function searches inside the current catalogue of archived products for the Platform Sentinel 5P (https://scihub.copernicus.eu/catalogueview/S5P/)
 and returns a list of the archived .csv files of a specific month and year.
 }
 \examples{

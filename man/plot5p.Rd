@@ -11,7 +11,8 @@ plot5p(fil, variable = NULL)
 
 \item{variable}{If the field is NULL then the function will return a list containing all the informations of the .nc file.
 Normally the variables names are included as PRODUCT/variable. If the variable name is given as parameter then the function
-will plot that variable}
+will plot that variable and save the resulting plot as export.svg. Plotting the variable may require some time, depending on
+the size of the downloaded file.}
 }
 \description{
 This function allows to inspect a downloaded S5p file or plots it

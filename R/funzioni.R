@@ -1,7 +1,7 @@
 
 #' List the latest files available in the Coperniucs 5p catalogue
 #'
-#' This function search inside the current catalogue of archived products for the Platform Sentinel 5P (https://scihub.copernicus.eu/catalogueview/S5P/)
+#' This function searches inside the current catalogue of archived products for the Platform Sentinel 5P (https://scihub.copernicus.eu/catalogueview/S5P/)
 #' and returns a list of the archived .csv files of a specific month and year.
 #' @param month Desired month in mm format (April would be "04", December would be "12")
 #' @param year Desired year in yyyy format ("2020" not "20")
@@ -107,7 +107,8 @@ get5p_latlon<-function(lat,lon,id=NULL)
 #' @param fil Name of the file to inspect/plot
 #' @param variable If the field is NULL then the function will return a list containing all the informations of the .nc file.
 #' Normally the variables names are included as PRODUCT/variable. If the variable name is given as parameter then the function
-#' will plot that variable
+#' will plot that variable and save the resulting plot as export.svg. Plotting the variable may require some time, depending on
+#' the size of the downloaded file.
 #' @keywords list, download, plot
 #' @export
 #' @examples
@@ -121,9 +122,10 @@ plot5p<-function(fil,variable=NULL){
 lon<-ncdf4::ncvar_get(nc,"PRODUCT/longitude")
 pro<-ncdf4::ncvar_get(nc,paste0("PRODUCT/",variable))
 plottami<-data.frame(lat=as.vector(lat),lon=as.vector(lon),valore=as.vector(pro))
-ggplot2::ggplot(plottami, aes(y=lat, x=lon, fill=valore)) +
+p<-ggplot2::ggplot(plottami, ggplot2::aes(y=lat, x=lon, fill=valore)) +
   ggplot2::geom_tile(width=1, height=1) +
   ggplot2::borders('world', xlim=range(plottami$lon), ylim=range(plottami$lat),
-          colour='gray90', size=.2)}
+          colour='gray90', size=.2)
+ggplot2::ggsave(file="export.png",p,width=10,height = 8)}
 return(nc)
 }
